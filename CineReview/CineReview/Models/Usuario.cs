@@ -1,5 +1,4 @@
-﻿using CineReview.Helpers;   
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace CineReview.Models
