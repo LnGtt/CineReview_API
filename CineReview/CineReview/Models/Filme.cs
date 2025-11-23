@@ -4,8 +4,6 @@ namespace CineReview.Models
 {
     public class Filme : Midia, IAvaliavel
     {
-
-        //Implementação da classe pai_____________________________________________________________________________________________________________________________
         public override double NotaMediaGeral
         {
             get
@@ -47,16 +45,13 @@ namespace CineReview.Models
             }
         }
 
-        //Implementação da interface_____________________________________________________________________________________________________________________________
         public List<Avaliacao> Avaliacoes { get; private set; }
 
-        //Construtor_____________________________________________________________________________________________________________________________
         public Filme(string titulo, string genero, string sinopse, TimeSpan duracao, string classificacaoIndicativa, DateOnly dataLancamento) : base(titulo, genero, sinopse, duracao, classificacaoIndicativa, dataLancamento)
         {
             Avaliacoes = new List<Avaliacao>();
         }
 
-        //Método da interface_____________________________________________________________________________________________________________________________
         public void AdicionarAvaliacao(Avaliacao avaliacao)
         {
             if (avaliacao == null) throw new ArgumentNullException(nameof(avaliacao), "Não é possível adicionar uma avaliação vazia.");

@@ -17,34 +17,34 @@ namespace CineReview.Controllers
         }
 
         [HttpPost]
-        public IActionResult Avaliar([FromBody] CriarAvaliacaoDto dto)
+        public async Task<IActionResult> Avaliar([FromBody] CriarAvaliacaoDTO dto)
         {
             try
             {
-                var resultado = _service.Avaliar(dto);
-                return Ok(resultado);
+                var resultado = await _service.AvaliarAsync(dto);
+                return CreatedAtAction(nameof(ListarTodas), new { id = resultado.Id }, resultado);
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [HttpGet("midia")]
-        public IActionResult ListarTodos()
+        [HttpGet("midia/{id}")]
+        public async Task<IActionResult> ListarPorMidia(Guid id)
         {
-            return Ok(_service.ListarTodos());
+            return Ok(await _service.ListarPorMidiaAsync(id));
         }
 
-        [HttpGet("midia/{id}")]
-        public IActionResult ListarPorMidia(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> ListarTodas()
         {
-            return Ok(_service.ListarPorMidia(id));
+            return Ok(await _service.ListarTodasAsync());
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Deletar(Guid id)
+        public async Task<IActionResult> Deletar(Guid id)
         {
             try
             {
-                _service.Deletar(id);
+                await _service.DeletarAsync(id);
                 return NoContent();
             }
             catch (Exception ex) { return NotFound(ex.Message); }

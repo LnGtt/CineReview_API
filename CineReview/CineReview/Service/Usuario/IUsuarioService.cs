@@ -5,10 +5,11 @@ namespace CineReview.Service.Usuario
 {
     public interface IUsuarioService
     {
-        UsuarioRespostaDTO Cadastrar(CriarUsuarioDTO dto);
-        UsuarioRespostaDTO Login(LoginUsuarioDTO dto);
-        List<UsuarioRespostaDTO> ListarTodos();
-        void Atualizar(Guid id, AtualizarUsuarioDTO dto);
-        void Deletar(Guid id);
+        Task<UsuarioRespostaDTO> CadastrarAsync(CriarUsuarioDTO dto);
+        Task<UsuarioRespostaDTO> LoginAsync(LoginUsuarioDTO dto);
+        Task<List<UsuarioRespostaDTO>> ListarTodosAsync();
+        Task<UsuarioRespostaDTO> BuscarPorIdAsync(Guid id);
+        Task AtualizarAsync(Guid id, AtualizarUsuarioDTO dto);
+        Task DeletarAsync(Guid id);
     }
 }

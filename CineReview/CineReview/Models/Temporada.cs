@@ -2,11 +2,9 @@
 {
     public class Temporada : IAvaliavel
     {
-        //Variáveis de apoio:
         private string _titulo, _sinopse, _classificacaoIndicativa;
         private int _numeroTemporada;
 
-        //Propriedades próprias_____________________________________________________________________________________________________________________________
         public Guid Id { get; set; }
         public int NumeroTemporada 
         { 
@@ -48,7 +46,6 @@
         public List<Episodio> Episodios { get; private set; }
         public List<Equipe> Equipe { get; private set; }
 
-        //Propriedade de interface_____________________________________________________________________________________________________________________________
         public List<Avaliacao> Avaliacoes { get; private set; }
         public double NotaMediaGeral 
         {
@@ -91,7 +88,6 @@
             }
         }
 
-        //Construtor_____________________________________________________________________________________________________________________________
         public Temporada(int numeroTemporada, string titulo, string sinopse, string classificacaoIndicativa, DateOnly dataLancamento)
         {
             Id = Guid.NewGuid();
@@ -105,16 +101,13 @@
             Avaliacoes = new List<Avaliacao>();
         }
 
-        //Método da interface_____________________________________________________________________________________________________________________________
-        
         public void AdicionarAvaliacao(Avaliacao avaliacao)
         {
             if (avaliacao == null) throw new ArgumentNullException("O objeto avaliação não pode ser nulo.");
             if (Avaliacoes.Any(a => a.UsuarioId == avaliacao.UsuarioId)) throw new InvalidOperationException("Este usuário já avaliou esta temporada.");
             Avaliacoes.Add(avaliacao);
         }
-
-        //Métodos_____________________________________________________________________________________________________________________________
+        
         public void AdicionarEpisodio(Episodio episodio)
         {
             if (episodio == null) throw new ArgumentNullException("O objeto episódio não pode ser nulo.");

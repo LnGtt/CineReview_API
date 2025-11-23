@@ -16,29 +16,59 @@ namespace CineReview.Controllers
         }
 
         [HttpPost("ator")]
-        public IActionResult AdicionarAtor([FromBody] CriarAtorDto dto)
+        public async Task<IActionResult> AdicionarAtor([FromBody] CriarAtorDTO dto)
         {
-            try { return Ok(_service.AdicionarAtor(dto)); }
+            try
+            {
+                var resultado = await _service.AdicionarAtorAsync(dto);
+                return Ok(resultado);
+            }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpPost("tecnico")]
-        public IActionResult AdicionarTecnico([FromBody] CriarTecnicoDto dto)
+        public async Task<IActionResult> AdicionarTecnico([FromBody] CriarTecnicoDTO dto)
         {
-            try { return Ok(_service.AdicionarTecnico(dto)); }
+            try
+            {
+                var resultado = await _service.AdicionarTecnicoAsync(dto);
+                return Ok(resultado);
+            }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpGet("midia/{midiaId}")]
-        public IActionResult ListarPorMidia(Guid midiaId)
+        public async Task<IActionResult> ListarPorMidia(Guid midiaId)
         {
-            return Ok(_service.ListarPorMidia(midiaId));
+            return Ok(await _service.ListarPorMidiaAsync(midiaId));
         }
 
         [HttpGet("temporada/{temporadaId}")]
-        public IActionResult ListarPorTemporada(Guid temporadaId)
+        public async Task<IActionResult> ListarPorTemporada(Guid temporadaId)
         {
-            return Ok(_service.ListarPorTemporada(temporadaId));
+            return Ok(await _service.ListarPorTemporadaAsync(temporadaId));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Atualizar(Guid id, [FromBody] AtualizarEquipeDTO dto)
+        {
+            try
+            {
+                await _service.AtualizarAsync(id, dto);
+                return NoContent();
+            }
+            catch (Exception ex) { return NotFound(ex.Message); }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Deletar(Guid id)
+        {
+            try
+            {
+                await _service.DeletarAsync(id);
+                return NoContent();
+            }
+            catch (Exception ex) { return NotFound(ex.Message); }
         }
     }
 }

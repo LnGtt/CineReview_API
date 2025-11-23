@@ -16,21 +16,53 @@ namespace CineReview.Controllers
         }
 
         [HttpPost]
-        public IActionResult CadastrarTemporada([FromBody] CriarTemporadaDto dto)
+        public async Task<IActionResult> CadastrarTemporada([FromBody] CriarTemporadaDTO dto)
         {
-            try { return Ok(_service.CadastrarTemporada(dto)); }
+            try
+            {
+                var resultado = await _service.CadastrarTemporadaAsync(dto);
+                return CreatedAtAction(nameof(ListarPorSerie), new { serieId = dto.SerieId }, resultado);
+            }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpPost("episodio")]
-        public IActionResult AdicionarEpisodio([FromBody] CriarEpisodioDto dto)
+        public async Task<IActionResult> AdicionarEpisodio([FromBody] CriarEpisodioDTO dto)
         {
             try
             {
-                _service.AdicionarEpisodio(dto);
+                await _service.AdicionarEpisodioAsync(dto);
                 return Ok("Episódio adicionado com sucesso.");
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet("serie/{serieId}")]
+        public async Task<IActionResult> ListarPorSerie(Guid serieId)
+        {
+            return Ok(await _service.ListarPorSerieAsync(serieId));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Atualizar(Guid id, [FromBody] AtualizarTemporadaDTO dto)
+        {
+            try
+            {
+                await _service.AtualizarTemporadaAsync(id, dto);
+                return NoContent();
+            }
+            catch (Exception ex) { return NotFound(ex.Message); }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Deletar(Guid id)
+        {
+            try
+            {
+                await _service.DeletarTemporadaAsync(id);
+                return NoContent();
+            }
+            catch (Exception ex) { return NotFound(ex.Message); }
         }
     }
 }

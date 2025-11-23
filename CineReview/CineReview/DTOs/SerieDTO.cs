@@ -2,7 +2,7 @@
 
 namespace CineReview.DTOs
 {
-    public class CriarSerieDto
+    public class CriarSerieDTO
     {
         [Required] public string Titulo { get; set; }
         [Required] public string Genero { get; set; }
@@ -12,7 +12,7 @@ namespace CineReview.DTOs
         public TimeSpan DuracaoMediaEpisodio { get; set; }
     }
 
-    public class SerieRespostaDto
+    public class SerieRespostaDTO
     {
         public Guid Id { get; set; }
         public string Titulo { get; set; }

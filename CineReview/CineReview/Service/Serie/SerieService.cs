@@ -15,9 +15,9 @@ namespace CineReview.Services
             _context = context;
         }
 
-        public SerieRespostaDto Cadastrar(CriarSerieDto dto)
+        public async Task<SerieRespostaDTO> CadastrarAsync(CriarSerieDTO dto)
         {
-            if (_context.Midias.Any(m => m.Titulo == dto.Titulo))
+            if (await _context.Midias.AnyAsync(m => m.Titulo == dto.Titulo))
                 throw new Exception("Série já cadastrada.");
 
             var novaSerie = new CineReview.Models.Serie(
@@ -27,9 +27,9 @@ namespace CineReview.Services
             );
 
             _context.Midias.Add(novaSerie);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            return new SerieRespostaDto
+            return new SerieRespostaDTO
             {
                 Id = novaSerie.Id,
                 Titulo = novaSerie.Titulo,
@@ -39,14 +39,14 @@ namespace CineReview.Services
             };
         }
 
-        public List<SerieRespostaDto> ListarTodas()
+        public async Task<List<SerieRespostaDTO>> ListarTodasAsync()
         {
-            var series = _context.Midias.OfType<CineReview.Models.Serie>()
+            var series = await _context.Midias.OfType<CineReview.Models.Serie>()
                 .Include(s => s.Temporadas)
                 .ThenInclude(t => t.Avaliacoes)
-                .ToList();
+                .ToListAsync();
 
-            return series.Select(s => new SerieRespostaDto
+            return series.Select(s => new SerieRespostaDTO
             {
                 Id = s.Id,
                 Titulo = s.Titulo,
@@ -56,16 +56,16 @@ namespace CineReview.Services
             }).ToList();
         }
 
-        public SerieRespostaDto BuscarPorId(Guid id)
+        public async Task<SerieRespostaDTO> BuscarPorIdAsync(Guid id)
         {
-            var serie = _context.Midias.OfType<CineReview.Models.Serie>()
+            var serie = await _context.Midias.OfType<CineReview.Models.Serie>()
                 .Include(s => s.Temporadas)
                 .ThenInclude(t => t.Avaliacoes)
-                .FirstOrDefault(s => s.Id == id);
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (serie == null) throw new Exception("Série não encontrada");
-
-            return new SerieRespostaDto
+            
+            return new SerieRespostaDTO
             {
                 Id = serie.Id,
                 Titulo = serie.Titulo,
@@ -75,9 +75,11 @@ namespace CineReview.Services
             };
         }
 
-        public void Atualizar(Guid id, CriarSerieDto dto)
+        public async Task AtualizarAsync(Guid id, CriarSerieDTO dto)
         {
-            var serie = _context.Midias.OfType<CineReview.Models.Serie>().FirstOrDefault(s => s.Id == id);
+            var serie = await _context.Midias.OfType<CineReview.Models.Serie>()
+                                    .FirstOrDefaultAsync(s => s.Id == id);
+
             if (serie == null) throw new Exception("Série não encontrada.");
 
             serie.Titulo = dto.Titulo;
@@ -85,18 +87,19 @@ namespace CineReview.Services
             serie.Sinopse = dto.Sinopse;
             serie.ClassificacaoIndicativa = dto.ClassificacaoIndicativa;
             serie.DataLancamento = dto.DataLancamento;
-            // Para alterar duração média precisaria expor setter na Model ou criar método
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Deletar(Guid id)
+        public async Task DeletarAsync(Guid id)
         {
-            var serie = _context.Midias.OfType<CineReview.Models.Serie>().FirstOrDefault(s => s.Id == id);
+            var serie = await _context.Midias.OfType<CineReview.Models.Serie>()
+                                    .FirstOrDefaultAsync(s => s.Id == id);
+
             if (serie == null) throw new Exception("Série não encontrada.");
 
             _context.Midias.Remove(serie);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

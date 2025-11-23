@@ -50,13 +50,11 @@ namespace CineReview.Models
 
         public List<Temporada> Temporadas { get; private set; }
 
-        //Construtor_____________________________________________________________________________________________________________________________
         public Serie(string titulo, string genero, string sinopse, TimeSpan duracao, string classificacaoIndicativa, DateOnly dataLancamento) : base(titulo, genero, sinopse, duracao, classificacaoIndicativa, dataLancamento)
         {
             Temporadas = new List<Temporada>();
         }
 
-        //Métodos_____________________________________________________________________________________________________________________________
         public void AdicionarTemporada(Temporada temporada)
         {
             if (temporada == null) throw new ArgumentNullException(nameof(temporada), "Não é possível adicionar uma temporada vazia.");

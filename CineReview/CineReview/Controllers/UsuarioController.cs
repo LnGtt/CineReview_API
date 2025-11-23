@@ -17,46 +17,56 @@ namespace CineReview.Controllers
         }
 
         [HttpPost("cadastrar")]
-        public IActionResult Cadastrar([FromBody] CriarUsuarioDTO dto)
+        public async Task<IActionResult> Cadastrar([FromBody] CriarUsuarioDTO dto)
         {
             try
             {
-                var usuario = _service.Cadastrar(dto);
+                var usuario = await _service.CadastrarAsync(dto);
                 return CreatedAtAction(nameof(ListarTodos), new { id = usuario.Id }, usuario);
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginUsuarioDTO dto)
+        public async Task<IActionResult> Login([FromBody] LoginUsuarioDTO dto)
         {
-            try { return Ok(_service.Login(dto)); }
+            try { return Ok(await _service.LoginAsync(dto)); }
             catch (Exception ex) { return Unauthorized(ex.Message); }
         }
 
         [HttpGet]
-        public IActionResult ListarTodos()
+        public async Task<IActionResult> ListarTodos()
         {
-            return Ok(_service.ListarTodos());
+            return Ok(await _service.ListarTodosAsync());
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Atualizar(Guid id, [FromBody] AtualizarUsuarioDTO dto)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> BuscarPorId(Guid id)
         {
             try
             {
-                _service.Atualizar(id, dto);
+                return Ok(await _service.BuscarPorIdAsync(id));
+            }
+            catch (Exception ex) { return NotFound(ex.Message); }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Atualizar(Guid id, [FromBody] AtualizarUsuarioDTO dto)
+        {
+            try
+            {
+                await _service.AtualizarAsync(id, dto);
                 return NoContent();
             }
             catch (Exception ex) { return NotFound(ex.Message); }
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Deletar(Guid id)
+        public async Task<IActionResult> Deletar(Guid id)
         {
             try
             {
-                _service.Deletar(id);
+                await _service.DeletarAsync(id);
                 return NoContent();
             }
             catch (Exception ex) { return NotFound(ex.Message); }

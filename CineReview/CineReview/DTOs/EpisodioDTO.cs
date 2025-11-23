@@ -2,7 +2,7 @@
 
 namespace CineReview.DTOs
 {
-    public class CriarEpisodioDto
+    public class CriarEpisodioDTO
     {
         [Required] public Guid TemporadaId { get; set; }
         [Required] public int NumeroEpisodio { get; set; }

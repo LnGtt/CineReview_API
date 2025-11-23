@@ -16,45 +16,52 @@ namespace CineReview.Controllers
         }
 
         [HttpPost]
-        public IActionResult Cadastrar([FromBody] CriarSerieDto dto)
+        public async Task<IActionResult> Cadastrar([FromBody] CriarSerieDTO dto)
         {
-            try { return Ok(_service.Cadastrar(dto)); }
+            try
+            {
+                var serie = await _service.CadastrarAsync(dto);
+                return CreatedAtAction(nameof(BuscarPorId), new { id = serie.Id }, serie);
+            }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpGet]
-        public IActionResult ListarTodas()
+        public async Task<IActionResult> ListarTodas()
         {
-            return Ok(_service.ListarTodas());
+            return Ok(await _service.ListarTodasAsync());
         }
 
         [HttpGet("{id}")]
-        public IActionResult BuscarPorId(Guid id)
+        public async Task<IActionResult> BuscarPorId(Guid id)
         {
-            try { return Ok(_service.BuscarPorId(id)); }
+            try
+            {
+                return Ok(await _service.BuscarPorIdAsync(id));
+            }
             catch (Exception ex) { return NotFound(ex.Message); }
         }
 
         [HttpPut("{id}")]
-        public IActionResult Atualizar(Guid id, [FromBody] CriarSerieDto dto)
+        public async Task<IActionResult> Atualizar(Guid id, [FromBody] CriarSerieDTO dto)
         {
             try
             {
-                _service.Atualizar(id, dto);
+                await _service.AtualizarAsync(id, dto);
                 return NoContent();
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Deletar(Guid id)
+        public async Task<IActionResult> Deletar(Guid id)
         {
             try
             {
-                _service.Deletar(id);
+                await _service.DeletarAsync(id);
                 return NoContent();
             }
             catch (Exception ex) { return NotFound(ex.Message); }
         }
     }
-}   
+}

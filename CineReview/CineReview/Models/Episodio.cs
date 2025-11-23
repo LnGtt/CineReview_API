@@ -2,7 +2,6 @@
 {
     public class Episodio
     {
-        //Variáveis de apoio para setters:
         private int _numeroEpisodio;
         private TimeSpan _duracao;
 

@@ -2,7 +2,7 @@
 
 namespace CineReview.DTOs
 {
-    public class CriarUsuarioDTO
+    public class CriarAdministradorDTO
     {
         [Required(ErrorMessage = "O nome é obrigatório")]
         public string NomeUsuario { get; set; }
@@ -16,21 +16,15 @@ namespace CineReview.DTOs
         public string Senha { get; set; }
     }
 
-    public class LoginUsuarioDTO
-    {
-        [Required] public string Email { get; set; }
-        [Required] public string Senha { get; set; }
-    }
-
-    public class UsuarioRespostaDTO
+    public class AdministradorRespostaDTO
     {
         public Guid Id { get; set; }
         public string NomeUsuario { get; set; }
         public string Email { get; set; }
-        public string Tipo { get; set; } 
+        public string Tipo { get; set; } = "Administrador";
     }
 
-    public class AtualizarUsuarioDTO
+    public class AtualizarAdministradorDTO
     {
         [Required] public string NomeUsuario { get; set; }
         [Required][EmailAddress] public string Email { get; set; }

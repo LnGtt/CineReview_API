@@ -1,13 +1,10 @@
 ﻿using CineReview.DTOs;
 
-namespace CineReview.Services
+public interface IFilmeService
 {
-    public interface IFilmeService
-    {
-        FilmeRespostaDto Cadastrar(CriarFilmeDto dto);
-        List<FilmeRespostaDto> ListarTodos();
-        FilmeRespostaDto BuscarPorId(Guid id);
-        void Atualizar(Guid id, CriarFilmeDto dto);
-        void Deletar(Guid id);
-    }
+    Task<FilmeRespostaDTO> CadastrarAsync(CriarFilmeDTO dto);
+    Task<List<FilmeRespostaDTO>> ListarTodosAsync();
+    Task<FilmeRespostaDTO> BuscarPorIdAsync(Guid id);
+    Task AtualizarAsync(Guid id, CriarFilmeDTO dto);
+    Task DeletarAsync(Guid id);
 }

@@ -2,7 +2,6 @@
 using CineReview.DTOs;
 using CineReview.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace CineReview.Services
 {
@@ -15,9 +14,9 @@ namespace CineReview.Services
             _context = context;
         }
 
-        public FilmeRespostaDto Cadastrar(CriarFilmeDto dto)
+        public async Task<FilmeRespostaDTO> CadastrarAsync(CriarFilmeDTO dto)
         {
-            if (_context.Midias.Any(m => m.Titulo == dto.Titulo))
+            if (await _context.Midias.AnyAsync(m => m.Titulo == dto.Titulo))
                 throw new Exception("Já existe um filme com este título.");
 
             var novoFilme = new CineReview.Models.Filme(
@@ -26,9 +25,9 @@ namespace CineReview.Services
             );
 
             _context.Midias.Add(novoFilme);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            return new FilmeRespostaDto
+            return new FilmeRespostaDTO
             {
                 Id = novoFilme.Id,
                 Titulo = novoFilme.Titulo,
@@ -37,24 +36,27 @@ namespace CineReview.Services
             };
         }
 
-        public List<FilmeRespostaDto> ListarTodos()
+        public async Task<List<FilmeRespostaDTO>> ListarTodosAsync()
         {
-            return _context.Midias.OfType<CineReview.Models.Filme>()
-                .Select(f => new FilmeRespostaDto
-                {
-                    Id = f.Id,
-                    Titulo = f.Titulo,
-                    Genero = f.Genero,
-                    NotaMediaGeral = f.NotaMediaGeral
-                }).ToList();
+            var filmes = await _context.Midias.OfType<CineReview.Models.Filme>().ToListAsync();
+
+            return filmes.Select(f => new FilmeRespostaDTO
+            {
+                Id = f.Id,
+                Titulo = f.Titulo,
+                Genero = f.Genero,
+                NotaMediaGeral = f.NotaMediaGeral
+            }).ToList();
         }
 
-        public FilmeRespostaDto BuscarPorId(Guid id)
+        public async Task<FilmeRespostaDTO> BuscarPorIdAsync(Guid id)
         {
-            var filme = _context.Midias.OfType<CineReview.Models.Filme>().FirstOrDefault(f => f.Id == id);
+            var filme = await _context.Midias.OfType<CineReview.Models.Filme>()
+                                     .FirstOrDefaultAsync(f => f.Id == id);
+
             if (filme == null) throw new Exception("Filme não encontrado.");
 
-            return new FilmeRespostaDto
+            return new FilmeRespostaDTO
             {
                 Id = filme.Id,
                 Titulo = filme.Titulo,
@@ -63,9 +65,11 @@ namespace CineReview.Services
             };
         }
 
-        public void Atualizar(Guid id, CriarFilmeDto dto)
+        public async Task AtualizarAsync(Guid id, CriarFilmeDTO dto)
         {
-            var filme = _context.Midias.OfType<CineReview.Models.Filme>().FirstOrDefault(f => f.Id == id);
+            var filme = await _context.Midias.OfType<CineReview.Models.Filme>()
+                                     .FirstOrDefaultAsync(f => f.Id == id);
+
             if (filme == null) throw new Exception("Filme não encontrado.");
 
             filme.Titulo = dto.Titulo;
@@ -77,7 +81,7 @@ namespace CineReview.Services
 
             try
             {
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {
@@ -86,13 +90,13 @@ namespace CineReview.Services
             }
         }
 
-        public void Deletar(Guid id)
+        public async Task DeletarAsync(Guid id)
         {
-            var filme = _context.Midias.Find(id);
+            var filme = await _context.Midias.FindAsync(id);
             if (filme == null) throw new Exception("Filme não encontrado.");
 
             _context.Midias.Remove(filme);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -2,28 +2,34 @@
 
 namespace CineReview.DTOs
 {
-    public class CriarMembroEquipeDto
+    public class CriarMembroEquipeDTO
     {
         public Guid? MidiaId { get; set; }
         public Guid? TemporadaId { get; set; }
-
         [Required] public string NomeCompleto { get; set; }
         [Required] public List<string> Funcoes { get; set; }
     }
 
-    public class CriarAtorDto : CriarMembroEquipeDto
+    public class CriarAtorDTO : CriarMembroEquipeDTO
     {
         [Required] public string Papel { get; set; }
     }
 
-    public class CriarTecnicoDto : CriarMembroEquipeDto
+    public class CriarTecnicoDTO : CriarMembroEquipeDTO
     {
     }
 
-    public class EquipeRespostaDto
+    public class EquipeRespostaDTO
     {
         public Guid Id { get; set; }
         public string Tipo { get; set; }
+        public string NomeCompleto { get; set; }
+        public List<string> Funcoes { get; set; }
+        public string? Papel { get; set; }
+    }
+
+    public class AtualizarEquipeDTO
+    {
         public string NomeCompleto { get; set; }
         public List<string> Funcoes { get; set; }
         public string? Papel { get; set; }

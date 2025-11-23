@@ -4,9 +4,9 @@ namespace CineReview.Service.Avaliacao
 {
     public interface IAvaliacaoService
     {
-        AvaliacaoRespostaDto Avaliar(CriarAvaliacaoDto dto);
-        List<AvaliacaoRespostaDto> ListarTodos();
-        List<AvaliacaoRespostaDto> ListarPorMidia(Guid midiaId);
-        void Deletar(Guid id);
+        Task<AvaliacaoRespostaDTO> AvaliarAsync(CriarAvaliacaoDTO dto);
+        Task<List<AvaliacaoRespostaDTO>> ListarPorMidiaAsync(Guid midiaId);
+        Task<List<AvaliacaoRespostaDTO>> ListarTodasAsync();
+        Task DeletarAsync(Guid id);
     }
 }

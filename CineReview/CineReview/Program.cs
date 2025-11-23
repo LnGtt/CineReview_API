@@ -1,4 +1,5 @@
 using CineReview.Data;
+using CineReview.Service.Administrador;
 using CineReview.Service.Avaliacao;
 using CineReview.Service.Usuario;
 using CineReview.Services;
@@ -19,6 +20,7 @@ builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
 builder.Services.AddScoped<ISerieService, SerieService>();
 builder.Services.AddScoped<ITemporadaService, TemporadaService>();
 builder.Services.AddScoped<IEquipeService, EquipeService>();
+builder.Services.AddScoped<IAdministradorService, AdministradorService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

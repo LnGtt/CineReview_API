@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CineReview.Helpers;   
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CineReview.Models
@@ -12,7 +13,6 @@ namespace CineReview.Models
         public List<Avaliacao> Avaliacoes { get; private set; }
         public List<Midia> Favoritos { get; private set; }
 
-        //Construtor_____________________________________________________________________________________________________________________________
         public Usuario(string nomeUsuario, string email, string senhaHash)
         {
             Id = Guid.NewGuid();
@@ -23,7 +23,6 @@ namespace CineReview.Models
             Favoritos = new List<Midia>();
         }
 
-        //Métodos
         public bool ValidarSenha(string senha)
         {
             if (string.IsNullOrWhiteSpace(senha))
@@ -44,10 +43,6 @@ namespace CineReview.Models
         {
             return senha.GetHashCode().ToString();
         }
-
-
-
-
 
         public void FavoritarMidia(Midia midia)
         {

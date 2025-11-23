@@ -2,7 +2,7 @@
 
 namespace CineReview.DTOs
 {
-    public class CriarFilmeDto
+    public class CriarFilmeDTO
     {
         [Required] public string Titulo { get; set; }
         [Required] public string Genero { get; set; }
@@ -12,7 +12,7 @@ namespace CineReview.DTOs
         [Required] public DateOnly DataLancamento { get; set; }
     }
 
-    public class FilmeRespostaDto
+    public class FilmeRespostaDTO
     {
         public Guid Id { get; set; }
         public string Titulo { get; set; }

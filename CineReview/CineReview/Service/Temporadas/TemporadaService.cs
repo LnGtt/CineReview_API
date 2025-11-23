@@ -1,6 +1,6 @@
 ﻿using CineReview.Data;
 using CineReview.DTOs;
-using CineReview.Models; // Namespace Models
+using CineReview.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -15,80 +15,95 @@ namespace CineReview.Services
             _context = context;
         }
 
-        public TemporadaRespostaDto CadastrarTemporada(CriarTemporadaDto dto)
+        public async Task<TemporadaRespostaDTO> CadastrarTemporadaAsync(CriarTemporadaDTO dto)
         {
-            // 1. Achar a Série
-            var serie = _context.Midias.OfType<CineReview.Models.Serie>()
+            var serie = await _context.Midias.OfType<CineReview.Models.Serie>()
                         .Include(s => s.Temporadas)
-                        .FirstOrDefault(s => s.Id == dto.SerieId);
+                        .FirstOrDefaultAsync(s => s.Id == dto.SerieId);
 
             if (serie == null) throw new Exception("Série não encontrada.");
 
-            // 2. Criar Temporada
+            if (serie.Temporadas.Any(t => t.NumeroTemporada == dto.NumeroTemporada))
+                throw new Exception($"A temporada {dto.NumeroTemporada} já existe nesta série.");
+
             var novaTemporada = new CineReview.Models.Temporada(
                 dto.NumeroTemporada, dto.Titulo, dto.Sinopse,
                 dto.ClassificacaoIndicativa, dto.DataLancamento
             );
 
-            // 3. Adicionar à Série (usando método da classe Serie para garantir regras)
-            try
-            {
-                serie.AdicionarTemporada(novaTemporada);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erro ao adicionar temporada: {ex.Message}");
-            }
+            serie.AdicionarTemporada(novaTemporada);
+            _context.Temporadas.Add(novaTemporada);
+            await _context.SaveChangesAsync();
 
-            // O EF Core entende que a temporada foi adicionada à lista da série e salva tudo
-            _context.Temporadas.Add(novaTemporada); // Adiciona explícito para garantir ID
-            _context.SaveChanges();
-
-            return new TemporadaRespostaDto
+            return new TemporadaRespostaDTO
             {
                 Id = novaTemporada.Id,
                 Titulo = novaTemporada.Titulo,
                 Numero = novaTemporada.NumeroTemporada,
-                NotaMedia = 0
+                NotaMedia = 0,
+                QtdEpisodios = 0
             };
         }
 
-        public void AdicionarEpisodio(CriarEpisodioDto dto)
+        public async Task AdicionarEpisodioAsync(CriarEpisodioDTO dto)
         {
-            var temporada = _context.Temporadas
+            var temporada = await _context.Temporadas
                             .Include(t => t.Episodios)
-                            .FirstOrDefault(t => t.Id == dto.TemporadaId);
+                            .FirstOrDefaultAsync(t => t.Id == dto.TemporadaId);
 
             if (temporada == null) throw new Exception("Temporada não encontrada.");
+
+            if (temporada.Episodios.Any(e => e.NumeroEpisodio == dto.NumeroEpisodio))
+                throw new Exception($"Episódio {dto.NumeroEpisodio} já existe.");
 
             var novoEpisodio = new CineReview.Models.Episodio(
                 dto.NumeroEpisodio, dto.Titulo, dto.Sinopse, dto.Duracao
             );
 
             temporada.AdicionarEpisodio(novoEpisodio);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public List<TemporadaRespostaDto> ListarPorSerie(Guid serieId)
+        public async Task<List<TemporadaRespostaDTO>> ListarPorSerieAsync(Guid serieId)
         {
-            return _context.Temporadas
-               .Include(t => t.Avaliacoes) // Necessário para média
-               .Where(t => EF.Property<Guid>(t, "SerieId") == serieId) // Truque se não mapeamos SerieId na classe Temporada
-                                                                       // OU, se o EF criou a FK shadow property "SerieId", isso funciona.
-                                                                       // Como não colocamos "public Guid SerieId" na classe Temporada.cs,
-                                                                       // vamos filtrar buscando as temporadas da série via objeto Serie para ser mais seguro:
+            var lista = await _context.Temporadas
+                .Include(t => t.Avaliacoes)
+                .Include(t => t.Episodios)
+                .ToListAsync();
 
-               // Abordagem Segura:
-               .AsEnumerable() // Traz pra memória se a FK for complicada
-               .Where(t => _context.Midias.OfType<CineReview.Models.Serie>()
-                           .Any(s => s.Id == serieId && s.Temporadas.Contains(t)))
-               .Select(t => new TemporadaRespostaDto
-               {
-                   Id = t.Id,
-                   Titulo = t.Titulo,
-                   Numero = t.NumeroTemporada,
-                   NotaMedia = t.NotaMediaGeral
-               }).ToList();
+            return lista
+                .Where(t => _context.Midias.OfType<CineReview.Models.Serie>()
+                            .Any(s => s.Id == serieId && s.Temporadas.Contains(t)))
+                .Select(t => new TemporadaRespostaDTO
+                {
+                    Id = t.Id,
+                    Titulo = t.Titulo,
+                    Numero = t.NumeroTemporada,
+                    NotaMedia = t.NotaMediaGeral,
+                    QtdEpisodios = t.Episodios.Count
+                }).ToList();
+        }
+
+        public async Task AtualizarTemporadaAsync(Guid id, AtualizarTemporadaDTO dto)
+        {
+            var temporada = await _context.Temporadas.FindAsync(id);
+            if (temporada == null) throw new Exception("Temporada não encontrada.");
+
+            temporada.Titulo = dto.Titulo;
+            temporada.Sinopse = dto.Sinopse;
+            temporada.ClassificacaoIndicativa = dto.ClassificacaoIndicativa;
+            temporada.DataLancamento = dto.DataLancamento;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeletarTemporadaAsync(Guid id)
+        {
+            var temporada = await _context.Temporadas.FindAsync(id);
+            if (temporada == null) throw new Exception("Temporada não encontrada.");
+
+            _context.Temporadas.Remove(temporada);
+            await _context.SaveChangesAsync();
         }
     }
 }

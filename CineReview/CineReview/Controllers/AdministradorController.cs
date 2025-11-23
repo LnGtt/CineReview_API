@@ -1,4 +1,5 @@
 ﻿using CineReview.DTOs;
+using CineReview.Service.Administrador;
 using CineReview.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,24 +7,38 @@ namespace CineReview.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FilmeController : ControllerBase
+    public class AdministradorController : ControllerBase
     {
-        private readonly IFilmeService _service;
+        private readonly IAdministradorService _service;
 
-        public FilmeController(IFilmeService service)
+        public AdministradorController(IAdministradorService service)
         {
             _service = service;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Cadastrar([FromBody] CriarFilmeDTO dto)
+        [HttpPost("cadastrar")]
+        public async Task<IActionResult> Cadastrar([FromBody] CriarAdministradorDTO dto)
         {
             try
             {
-                var filme = await _service.CadastrarAsync(dto);
-                return CreatedAtAction(nameof(BuscarPorId), new { id = filme.Id }, filme);
+                var admin = await _service.CadastrarAsync(dto);
+                return CreatedAtAction(nameof(BuscarPorId), new { id = admin.Id }, admin);
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginUsuarioDTO dto)
+        {
+            try
+            {
+                var admin = await _service.LoginAsync(dto);
+                return Ok(admin);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         [HttpGet]
@@ -35,19 +50,22 @@ namespace CineReview.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> BuscarPorId(Guid id)
         {
-            try { return Ok(await _service.BuscarPorIdAsync(id)); }
+            try
+            {
+                return Ok(await _service.BuscarPorIdAsync(id));
+            }
             catch (Exception ex) { return NotFound(ex.Message); }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Atualizar(Guid id, [FromBody] CriarFilmeDTO dto)
+        public async Task<IActionResult> Atualizar(Guid id, [FromBody] AtualizarAdministradorDTO dto)
         {
             try
             {
                 await _service.AtualizarAsync(id, dto);
                 return NoContent();
             }
-            catch (Exception ex) { return BadRequest(ex.Message); }
+            catch (Exception ex) { return NotFound(ex.Message); }
         }
 
         [HttpDelete("{id}")]

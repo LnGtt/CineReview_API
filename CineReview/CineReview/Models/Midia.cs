@@ -2,7 +2,6 @@
 {
     public abstract class Midia
     {
-        //Variáveis de apoio:
         private string _titulo, _genero, _sinopse, _classificacaoIndicativa;
         private TimeSpan _duracao;
 

@@ -6,7 +6,6 @@ namespace CineReview.Models
     {
         private Avaliacao() { }
 
-        //Variáveis de apoio para setters:
         private Usuario _usuario;
         public Guid Id { get; private set; }
         public DateTime DataAvaliacao { get; private set; }
@@ -23,10 +22,8 @@ namespace CineReview.Models
         }
 
 
-        //Varíaveis de apoio para setters:
         private int _notaTrama, _notaRitmo, _notaDevPersonagens, _notaConstrucaoMundo, _notaTematica, _notaAtuacao, _notaEdicao, _notaDirecao, _notaArte, _notaCinematografia, _notaCenarios, _notaFigurinos, _notaEfeitosVisuais, _notaQualidadeImagem, _notaScore, _notaEfeitosSonoros;
 
-        //Notas de Narrativa (0-10)_____________________________________________________________________________________________________________________________
         public int NotaTrama 
         { 
             get => _notaTrama;

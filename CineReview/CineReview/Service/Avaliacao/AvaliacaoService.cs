@@ -1,15 +1,14 @@
 ﻿using CineReview.Data;
 using CineReview.DTOs;
 using CineReview.Models;
-using CineReview.Service.Avaliacao; // Verifique se este é o namespace correto da sua interface
+using CineReview.Service.Avaliacao;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CineReview.Services
 {
-    public class AvaliacaoService : IAvaliacaoService   
+
+    public class AvaliacaoService : IAvaliacaoService
     {
         private readonly DataContext _context;
 
@@ -18,24 +17,23 @@ namespace CineReview.Services
             _context = context;
         }
 
-        public AvaliacaoRespostaDto Avaliar(CriarAvaliacaoDto dto)
+        public async Task<AvaliacaoRespostaDTO> AvaliarAsync(CriarAvaliacaoDTO dto)
         {
-            var usuario = _context.Usuarios.Find(dto.UsuarioId);
+            var usuario = await _context.Usuarios.FindAsync(dto.UsuarioId);
             if (usuario == null) throw new Exception("Usuário não encontrado.");
 
-            bool existeMidia = _context.Midias.Any(m => m.Id == dto.AvaliadoId);
-            bool existeTemporada = _context.Temporadas.Any(t => t.Id == dto.AvaliadoId);
+            bool existeMidia = await _context.Midias.AnyAsync(m => m.Id == dto.AvaliadoId);
+            bool existeTemporada = await _context.Temporadas.AnyAsync(t => t.Id == dto.AvaliadoId);
 
             if (!existeMidia && !existeTemporada)
                 throw new Exception("Obra (Filme/Série/Temporada) não encontrada.");
 
-            bool jaAvaliou = _context.Avaliacoes.Any(a =>
+            bool jaAvaliou = await _context.Avaliacoes.AnyAsync(a =>
                 a.UsuarioId == dto.UsuarioId &&
                 a.AvaliadoId == dto.AvaliadoId);
 
             if (jaAvaliou) throw new Exception("Você já avaliou esta obra.");
 
-            // Usando o construtor completo
             var novaAvaliacao = new CineReview.Models.Avaliacao(
                 usuario, dto.AvaliadoId,
                 dto.NotaTrama, dto.NotaRitmo, dto.NotaDevPersonagens, dto.NotaConstrucaoMundo, dto.NotaTematica,
@@ -45,42 +43,41 @@ namespace CineReview.Services
             );
 
             _context.Avaliacoes.Add(novaAvaliacao);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return ConverterParaDto(novaAvaliacao);
         }
 
-        public List<AvaliacaoRespostaDto> ListarTodas()
+        public async Task<List<AvaliacaoRespostaDTO>> ListarTodasAsync()
         {
-            var lista = _context.Avaliacoes
-                    .Include(a => a.Usuario)
-                    .ToList();
+            var lista = await _context.Avaliacoes
+                .Include(a => a.Usuario)
+                .ToListAsync();
 
             return lista.Select(a => ConverterParaDto(a)).ToList();
         }
 
-        public List<AvaliacaoRespostaDto> ListarPorMidia(Guid midiaId)
+        public async Task<List<AvaliacaoRespostaDTO>> ListarPorMidiaAsync(Guid midiaId)
         {
-            var avaliacoesDoBanco = _context.Avaliacoes
+            var lista = await _context.Avaliacoes
                 .Include(a => a.Usuario)
                 .Where(a => a.AvaliadoId == midiaId)
-                .ToList();
+                .ToListAsync();
 
-            return avaliacoesDoBanco.Select(a => ConverterParaDto(a)).ToList();
+            return lista.Select(a => ConverterParaDto(a)).ToList();
         }
 
-        public void Deletar(Guid id)
+        public async Task DeletarAsync(Guid id)
         {
-            var avaliacao = _context.Avaliacoes.Find(id);
+            var avaliacao = await _context.Avaliacoes.FindAsync(id);
             if (avaliacao == null) throw new Exception("Avaliação não encontrada.");
             _context.Avaliacoes.Remove(avaliacao);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        // Método auxiliar privado (não faz parte da interface pública)
-        private AvaliacaoRespostaDto ConverterParaDto(CineReview.Models.Avaliacao a)
+        private AvaliacaoRespostaDTO ConverterParaDto(CineReview.Models.Avaliacao a)
         {
-            return new AvaliacaoRespostaDto
+            return new AvaliacaoRespostaDTO
             {
                 Id = a.Id,
                 NomeUsuario = a.Usuario?.NomeUsuario ?? "Anônimo",
@@ -88,16 +85,6 @@ namespace CineReview.Services
                 MediaGeral = a.GetMediaGeral(),
                 DataAvaliacao = a.DataAvaliacao
             };
-        }
-
-        public List<AvaliacaoRespostaDto> ListarTodos()
-        {
-            var lista = _context.Avaliacoes
-                    .Include(a => a.Usuario)
-                    .ToList();
-
-            // Converte para o DTO
-            return lista.Select(a => ConverterParaDto(a)).ToList();
         }
     }
 }
