@@ -7,4 +7,7 @@ public interface IFilmeService
     Task<FilmeRespostaDTO> BuscarPorIdAsync(Guid id);
     Task AtualizarAsync(Guid id, CriarFilmeDTO dto);
     Task DeletarAsync(Guid id);
+
+    Task<List<FilmeRespostaDTO>> ListarRankingAsync(); // Top Filmes
+    Task<List<FilmeRespostaDTO>> FiltrarPorGeneroAsync(string genero); // Busca específica
 }

@@ -1,10 +1,12 @@
 ﻿using CineReview.DTOs;
 using CineReview.Service.Administrador;
 using CineReview.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CineReview.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AdministradorController : ControllerBase

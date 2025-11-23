@@ -27,7 +27,8 @@ namespace CineReview.DTOs
         public Guid Id { get; set; }
         public string NomeUsuario { get; set; }
         public string Email { get; set; }
-        public string Tipo { get; set; } 
+        public string Tipo { get; set; }
+        public string Token { get; set; }
     }
 
     public class AtualizarUsuarioDTO

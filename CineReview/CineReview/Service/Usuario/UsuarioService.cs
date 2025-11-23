@@ -10,10 +10,12 @@ namespace CineReview.Services
     public class UsuarioService : IUsuarioService
     {
         private readonly DataContext _context;
+        private readonly TokenService _tokenService;
 
-        public UsuarioService(DataContext context)
+        public UsuarioService(DataContext context, TokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
         }
 
         public async Task<UsuarioRespostaDTO> CadastrarAsync(CriarUsuarioDTO dto)
@@ -31,7 +33,9 @@ namespace CineReview.Services
             {
                 Id = novoUsuario.Id,
                 NomeUsuario = novoUsuario.NomeUsuario,
-                Email = novoUsuario.Email
+                Email = novoUsuario.Email,
+                Tipo = "Comum",
+                Token = ""
             };
         }
 
@@ -45,12 +49,15 @@ namespace CineReview.Services
 
             string tipoUsuario = usuario is Administrador ? "Administrador" : "Comum";
 
+            var tokenGerado = _tokenService.GerarToken(usuario);
+
             return new UsuarioRespostaDTO
             {
                 Id = usuario.Id,
                 NomeUsuario = usuario.NomeUsuario,
                 Email = usuario.Email,
-                Tipo = tipoUsuario
+                Tipo = tipoUsuario,
+                Token = tokenGerado
             };
         }
 

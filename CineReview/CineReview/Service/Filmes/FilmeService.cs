@@ -98,5 +98,39 @@ namespace CineReview.Services
             _context.Midias.Remove(filme);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<FilmeRespostaDTO>> ListarRankingAsync()
+        {
+            var filmes = await _context.Midias.OfType<CineReview.Models.Filme>()
+                                     .Include(f => f.Avaliacoes) 
+                                     .ToListAsync();
+
+            return filmes
+                .OrderByDescending(f => f.NotaMediaGeral) 
+                .Select(f => new FilmeRespostaDTO
+                {
+                    Id = f.Id,
+                    Titulo = f.Titulo,
+                    Genero = f.Genero,
+                    NotaMediaGeral = f.NotaMediaGeral
+                })
+                .ToList();
+        }
+
+        public async Task<List<FilmeRespostaDTO>> FiltrarPorGeneroAsync(string genero)
+        {
+            
+            var filmes = await _context.Midias.OfType<CineReview.Models.Filme>()
+                                     .Where(f => f.Genero.Contains(genero)) 
+                                     .ToListAsync();
+
+            return filmes.Select(f => new FilmeRespostaDTO
+            {
+                Id = f.Id,
+                Titulo = f.Titulo,
+                Genero = f.Genero,
+                NotaMediaGeral = f.NotaMediaGeral
+            }).ToList();
+        }
     }
 }
